@@ -1,0 +1,29 @@
+{
+  "name": "bp-organigram",
+  "version": "1.0.0",
+  "main": [
+    "lib/primitives.latest.css",
+    "lib/primitives.min.js"
+  ],
+  "dependencies": {
+    "jquery": ">=1.8.3"
+  },
+  "homepage": "http://www.basicprimitives.com/",
+  "authors": [
+    "basicprimitives.com"
+  ],
+  "description": "Bower aware copy of the distributable for the Basic Primitives Organization chart library.",
+  "keywords": [
+    "chart",
+    "organigram",
+    "organization"
+  ],
+  "license": "http://www.basicprimitives.com/pdf/license.pdf",
+  "private": true,
+  "ignore": [
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

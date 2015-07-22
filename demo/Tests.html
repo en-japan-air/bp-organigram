@@ -1,0 +1,724 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Basic Primitives QUnit Tests</title>
+    <link rel="stylesheet" href="//code.jquery.com/qunit/qunit-1.15.0.css">
+</head>
+<body>
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+    <script src="//code.jquery.com/qunit/qunit-1.15.0.js"></script>
+
+    <link rel="stylesheet" href="demo/js/jquery/ui-lightness/jquery-ui-1.10.2.custom.css" />
+    <script type="text/javascript" src="demo/js/jquery/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="demo/js/jquery/jquery-ui-1.10.2.custom.min.js"></script>
+
+    <!-- # include file="src/src.primitives.html"-->
+
+    <script  type="text/javascript" src="demo/js/primitives.min.js?2023"></script>
+    <link href="demo/css/primitives.latest.css?2023" media="screen" rel="stylesheet" type="text/css" />
+
+
+    <script type="text/javascript" src="demo/js/dependencies.js"></script>
+
+
+    <script type='text/javascript'>
+        QUnit.test("primitives.common.getGraphSpanningTree - Maximum spanning tree.", function (assert) {
+            var graph = {
+                A: { B: 2, C: 1, D: 2 },
+                B: { A: 2, C: 1, E: 3, J: 2 },
+                C: { B: 1, A: 1, D: 3 },
+                D: { C: 3, A: 2, E: 4 },
+                E: { B: 3, D: 4, F: 1 },
+                F: { E: 1 },
+                J: { B: 2 }
+            };
+
+            var expectedTree = {
+                D: ['E', 'C'],
+                E: ['B', 'F'],
+                B: ['J', 'A']
+            };
+
+            var maximumTree = primitives.common.getGraphSpanningTree(graph, 'D', function (a, b) {
+                return a - b;
+            });
+
+            var result = true;
+
+            for (var key in maximumTree) {
+                if (maximumTree.hasOwnProperty(key)) {
+                    var items = maximumTree[key];
+                    var expectedItems = expectedTree[key];
+                    items.sort();
+                    expectedItems.sort();
+                    if (items.join(',') != expectedItems.join(',')) {
+                        result = false;
+                    }
+                }
+            }
+
+            assert.ok(result, "Passed!");
+        });
+
+        QUnit.test("primitives.common.getShortestPath - Shortest path.", function (assert) {
+            var graph = {
+                A: { B: {}, C: {}, D: {} },
+                B: { A: {}, E: {} },
+                C: { A: {}, E: { weight: 100 }, D: { weight: 100 } },
+                D: { A: {}, F: { weight: 50 }, J: {}, C: { weight: 100 } },
+                E: { B: {}, C: { weight: 100 }, F: { weight: 100 } },
+                F: { D: { weight: 50 }, E: { weight: 100 } },
+                J: { D: {} }
+            };
+
+            var expectedConnectionPath = ['J', 'D', 'C', 'E'];
+
+            var connectionPath = primitives.common.getShortestPath(graph, 'E', 'J');
+
+            assert.ok(expectedConnectionPath.join(',') == connectionPath.join(','), "Not weighted edges. Passed!");
+
+            expectedConnectionPath = ['J', 'D', 'A', 'B', 'E'];
+
+            connectionPath = primitives.common.getShortestPath(graph, 'E', 'J', function (edge) {
+                return edge.hasOwnProperty('weight') ? edge.weight : 1;
+            });
+
+            assert.ok(expectedConnectionPath.join(',') == connectionPath.join(','), "Weighted edges. Passed!");
+        });
+
+        QUnit.test("primitives.common.isEmptyObject - test for empty object.", function (assert) {
+            assert.ok(primitives.common.isEmptyObject({}), "Object is empty returns true. Passed!");
+            assert.ok(!primitives.common.isEmptyObject({ a: 1000 }), "Object is not empty returns false. Passed!");
+        });
+
+        QUnit.test("primitives.common.isNullOrEmpty - test for empty string.", function (assert) {
+            assert.ok(primitives.common.isNullOrEmpty(""), "String is empty returns true. Passed!");
+            assert.ok(primitives.common.isNullOrEmpty(null), "String is null returns true. Passed!");
+            assert.ok(!primitives.common.isNullOrEmpty("Some string"), "String is not empty returns false. Passed!");
+        });
+
+        QUnit.test("primitives.common.indexOf - test for object position.", function (assert) {
+            assert.ok(primitives.common.indexOf([{ a: 2 }, { a: 5 }, { a: 3 }, { a: 10 }, { a: 8 }, { a: 4 }], { a: 3 }, function (a, b) { return a.a == b.a; }) == 2, "Object. Passed!");
+            assert.ok(primitives.common.indexOf([2, 5, 3, 10, 8, 4, 1], 3) == 2, "Integer. Passed!");
+            assert.ok(primitives.common.indexOf([2, 5, 3, 10, 8, 4, 1], 24) == -1, "Integer was not found. Passed!");
+        });
+
+        QUnit.test("primitives.common.compareArrays - compare non-object non-sorted arrays.", function (assert) {
+            assert.ok(primitives.common.compareArrays([], []), "Empty arrays are equal. Passed!");
+            assert.ok(!primitives.common.compareArrays([1], []), "First array is empty and second is not. Arrays are not equal. Passed!");
+            assert.ok(!primitives.common.compareArrays([], [1]), "First array is not empty and second is empty. Arrays are not equal. Passed!");
+            assert.ok(primitives.common.compareArrays([1, 1, 1, 2, 2, 3, 3, 3, 3], [1, 2, 3, 1, 2, 3, 1, 3, 3]), "Compare equal non sorted arrays having duplicates. Arrays are equal. Passed!");
+            assert.ok(primitives.common.compareArrays(['A', 'B', 'AB', 'AC'], ['AC', 'AB', 'A', 'B']), "Compare equal non sorted arrays having no duplicates. Arrays are equal. Passed!");
+            assert.ok(!primitives.common.compareArrays([1, 2, 3, 4, 4, 5, 6, 7, 8], [1, 2, 3, 4, 4, 4, 5, 6, 7, 8]), "Compare non-equal non-sorted arrays having the same values but different number of duplicates. Arrays are not equal. Passed!");
+        });
+
+        QUnit.test(" primitives.common.invertReferences - Inverts hash of references.", function (assert) {
+            var sourceItems = {
+                A: [0, 1, 2, 3, 4],
+                B: [0, 1, 2, 3],
+                C: [0, 1, 2],
+                D: [0, 1],
+                E: [0]
+            };
+
+            var invertedItems = primitives.common.invertReferences(sourceItems, function (value) { return value; });
+            var newSourceItems = primitives.common.invertReferences(invertedItems);
+
+            var result = true;
+
+            for (var key in sourceItems) {
+                if (sourceItems[key].join(',') != newSourceItems[key].join(',')) {
+                    result = false;
+                }
+            }
+
+            assert.ok(result, "Passed!");
+        });
+
+        function testOptimizedItems(sourceItems, optimizedItems) {
+            var result = true;
+
+            for (var key in sourceItems) {
+                var sourceItem = sourceItems[key];
+
+                if (sourceItem.length > 0) {
+                    var resolvedSourceItems = getResolvedItems([key], sourceItems);
+                    var resolvedItems = getResolvedItems([key], optimizedItems);
+
+                    if (resolvedItems.join(',') != resolvedSourceItems.join(',')) {
+                        var result = false;
+                    }
+                }
+            }
+
+            return result;
+        };
+
+        function getResolvedItems(item, hashItems) {
+            var result = [];
+
+            for (var index = 0; index < item.length; index += 1) {
+                var actualItem = item[index].toString();
+
+                if (hashItems.hasOwnProperty(actualItem) && hashItems[actualItem].length > 0) {
+                    result = result.concat(getResolvedItems(hashItems[actualItem], hashItems));
+                } else {
+                    result.push(actualItem);
+                }
+            }
+
+            result.sort();
+            result = jQuery.unique(result);
+
+            return result;
+        };
+
+        QUnit.test("primitives.common.optimizeReferences - Nodes regrouping. Check that targets stay the same after groupping of common targets between nodes of layer.", function (assert) {
+            var controller = new primitives.famdiagram.Controller();
+            var maximumNodeId = 100;
+
+            function addNewReferenceItem() {
+                return maximumNodeId++;
+            }
+
+            var sourceItems = {
+                A: [0, 1, 2, 3],
+                B: [2, 3, 4, 5],
+                C: [3, 4, 5, 6],
+                D: [4, 5, 6, 7]
+            };
+            var optimizedItems = primitives.common.optimizeReferences(sourceItems, addNewReferenceItem);
+            assert.ok(testOptimizedItems(sourceItems, optimizedItems), "Chained 4 elements having 4 target items. Every item overlaps its neighbours with 2 shared items.");
+
+            sourceItems = {
+                A: [0, 1, 2],
+                B: [1, 2, 3],
+                C: [2, 3, 4],
+                D: [3, 4, 5],
+                E: [4, 5, 6]
+            };
+            optimizedItems = primitives.common.optimizeReferences(sourceItems, addNewReferenceItem);
+            assert.ok(testOptimizedItems(sourceItems, optimizedItems), "Chained 5 elements having 3 target items. Every item overlaps its neighbours with 2 shared items.");
+
+            sourceItems = {
+                A: [1, 2, 3, 4],
+                B: [1, 2, 3],
+                C: [3, 4, 5]
+            };
+            optimizedItems = primitives.common.optimizeReferences(sourceItems, addNewReferenceItem);
+            assert.ok(testOptimizedItems(sourceItems, optimizedItems), "Nested item and parent together overlap with 3d item.");
+
+            sourceItems = {
+                A: [1, 2, 3, 4, 5, 6, 7, 8],
+                B: [1, 2, 3, 4, 5],
+                C: [1, 2, 3, 4, 5],
+                D: [4, 5, 6, 7],
+                E: [4, 6, 7]
+            };
+            optimizedItems = primitives.common.optimizeReferences(sourceItems, addNewReferenceItem);
+            assert.ok(testOptimizedItems(sourceItems, optimizedItems), "One items containing all other items. Duplicates. Overlapping sub item.");
+
+            sourceItems = {
+                A: [0, 1, 2, 3, 4],
+                B: [0, 1, 2, 3],
+                C: [0, 1, 2],
+                D: [0, 1],
+                E: [0]
+            };
+            optimizedItems = primitives.common.optimizeReferences(sourceItems, addNewReferenceItem);
+            assert.ok(testOptimizedItems(sourceItems, optimizedItems), "Nesting 5 items.");
+
+            var sourceItems = {
+                A: [0, 1, 2, 3],
+                B: [1, 2, 3],
+                C: [2, 3, 4],
+                D: [5, 6, 7, 8],
+                E: [5, 6, 7],
+                F: [6, 7, 9]
+            };
+
+            var optimizedItems = primitives.common.optimizeReferences(sourceItems, addNewReferenceItem);
+            assert.ok(testOptimizedItems(sourceItems, optimizedItems), "Test 2 non-connected clusters of items. All items reference the same target items via group items.");
+
+            var hasUnoptimizedItems = false;
+            for (var key in sourceItems) {
+                if (!optimizedItems.hasOwnProperty(key) || sourceItems[key].join(',') == optimizedItems[key].join(',')) {
+                    hasUnoptimizedItems = true;
+                    break;
+                }
+            }
+            assert.ok(!hasUnoptimizedItems, "Test 2 non-connected clusters of items. Every cluster should be optimized separately.");
+
+            sourceItems = {
+                A: ['B', 'D', 'D2'],
+                B: ['C', 'D', 'D2'],
+                C: [],
+                A2: ['B2', 'D', 'D2'],
+                B2: ['C2', 'D', 'D2'],
+                C2: [],
+                D: [],
+                D2: []
+            };
+
+            optimizedItems = primitives.common.optimizeReferences(sourceItems, addNewReferenceItem);
+            assert.ok(testOptimizedItems(sourceItems, optimizedItems), "Test regrouping of items belonging to several layers.");
+        });
+
+        function testLevels(expectedLevels, famItems) {
+            var result = true;
+            for (var key in expectedLevels) {
+                if (famItems[key].level != expectedLevels[key]) {
+                    result = false;
+                }
+            }
+            return result;
+        }
+
+        QUnit.test("primitives.famdiagram.Controller._sortItemsBylevelsSmart - Topological sorting for dependency chart.", function (assert) {
+            var controller = new primitives.famdiagram.Controller();
+
+            var famItems = {
+                1: new primitives.famdiagram.FamilyItem({ id: 1, logicalChildren: [4, 5] }),
+                2: new primitives.famdiagram.FamilyItem({ id: 2, logicalChildren: [4, 5] }),
+                3: new primitives.famdiagram.FamilyItem({ id: 3, logicalChildren: [4, 5] }),
+                4: new primitives.famdiagram.FamilyItem({ id: 4, logicalParents: [1, 2, 3] }),
+                5: new primitives.famdiagram.FamilyItem({ id: 5, logicalParents: [1, 2, 3] })
+            };
+
+            var expectedLevels = {
+                1: 0,
+                2: 0,
+                3: 0,
+                4: 1,
+                5: 1
+            };
+
+            controller._sortItemsBylevelsSmart(famItems);
+            
+            assert.ok(testLevels(expectedLevels, famItems), "Basic case of 3 parents sharing 2 children!");
+
+            /* In the following case, items 1 and 9 should be next in level to their children */
+            famItems = {
+                1: new primitives.famdiagram.FamilyItem({ id: 1, logicalChildren: [4], logicalParents: [] }),
+                2: new primitives.famdiagram.FamilyItem({ id: 2, logicalChildren: [3], logicalParents: [] }),
+                3: new primitives.famdiagram.FamilyItem({ id: 3, logicalChildren: [4], logicalParents: [2] }),
+                4: new primitives.famdiagram.FamilyItem({ id: 4, logicalChildren: [5, 8], logicalParents: [1, 3] }),
+                5: new primitives.famdiagram.FamilyItem({ id: 5, logicalChildren: [6], logicalParents: [4, 9] }),
+                6: new primitives.famdiagram.FamilyItem({ id: 6, logicalChildren: [7], logicalParents: [5] }),
+                7: new primitives.famdiagram.FamilyItem({ id: 7, logicalChildren: [], logicalParents: [6, 8] }),
+                8: new primitives.famdiagram.FamilyItem({ id: 8, logicalChildren: [7], logicalParents: [4] }),
+                9: new primitives.famdiagram.FamilyItem({ id: 9, logicalChildren: [5], logicalParents: [] })
+            };
+
+            expectedLevels = {
+                1: 0,
+                2: -1,
+                3: 0,
+                4: 1,
+                5: 2,
+                6: 3,
+                7: 4,
+                8: 2,
+                9: 1
+            };
+
+            controller._sortItemsBylevelsSmart(famItems);
+
+            assert.ok(testLevels(expectedLevels, famItems), "Orphan parent branches should be aligned close to node connected to main diagram!");
+        });
+
+        QUnit.test("primitives.common.topologicalSort", function (assert) {
+            var nodes = {
+                D: [],
+                C: ["D"],
+                F: ["D"],
+                B: ["C", "F"],
+                E: ["C", "F"],
+                A: ["B", "E"]
+            };
+            
+            var expectedResult = ['A', 'B', 'E', 'C', 'F', 'D'];
+
+            var result = primitives.common.topologicalSort(nodes);
+
+            assert.ok(result.join(',') == expectedResult.join(','), "Regular dependecnies!");
+
+            nodes = {
+                A: [],
+                A2: [],
+                C: ['B'],
+                B: ['A'],
+                C2: ['B2'],
+                B2: ['A2'],
+                G: ["B", "A", "B2", "A2"]
+            };
+
+            expectedResult = ['C', 'C2', 'G', 'B', 'B2', 'A', 'A2'];
+
+            result = primitives.common.topologicalSort(nodes);
+
+            assert.ok(result.join(',') == expectedResult.join(','), "Balanced!");
+
+            nodes = {
+                A: [],
+                A2: [],
+                C: ['B'],
+                B: ['A'],
+                C2: ['B2'],
+                B2: ['A2']
+            };
+
+            expectedResult = ['C', 'C2', 'B', 'B2', 'A', 'A2'];
+
+            result = primitives.common.topologicalSort(nodes);
+
+            assert.ok(result.join(',') == expectedResult.join(','), "Two clusters!");
+
+        });
+
+        QUnit.test("primitives.common.mergeSort", function (assert) {
+            var arrays = [
+                [1, 5, 9, 13, 17],
+                [0, 2, 4, 6, 8, 10],
+                [3, 7, 11],
+                [],
+                [18, 19, 20]
+            ];
+
+            var result = primitives.common.mergeSort(arrays);
+            
+            var expectedResult = [];
+            for (var index = 0; index < arrays.length; index += 1) {
+                var array1 = arrays[index];
+
+                expectedResult = expectedResult.concat(array1);
+            }
+            expectedResult.sort(function(a, b) {
+                return a - b;
+            });
+
+            assert.ok(result.join(',') == expectedResult.join(','), "Merged sort multiple arrays!");
+
+            arrays = [
+                [1, 1, 5, 9, 9, 13, 17, 17],
+                [0, 0, 2, 4, 6, 6, 8, 10]
+            ];
+
+            result = primitives.common.mergeSort(arrays, null, true);
+
+            expectedResult = [0, 1, 2, 4, 5, 6, 8, 9, 10, 13, 17];
+
+            assert.ok(result.join(',') == expectedResult.join(','), "Merged sort multiple arrays ignoring duplicates!");
+
+            arrays = [
+                [1, 5, 9, 13, 17],
+            ];
+
+            var result = primitives.common.mergeSort(arrays);
+
+            var expectedResult = [];
+            for (var index = 0; index < arrays.length; index += 1) {
+                var array1 = arrays[index];
+
+                expectedResult = expectedResult.concat(array1);
+            }
+            expectedResult.sort(function (a, b) {
+                return a - b;
+            });
+
+            assert.ok(result.join(',') == expectedResult.join(','), "Merged sort single array!");
+
+            arrays = [
+                [1, 1, 5, 9, 9, 9, 13, 17, 17, 18, 18, 18, 18]
+            ];
+
+            result = primitives.common.mergeSort(arrays, null, true);
+
+            expectedResult = [1, 5, 9, 13, 17, 18];
+
+            assert.ok(result.join(',') == expectedResult.join(','), "Merged sort single array ignoring duplicates!");
+
+            arrays = [
+                [{ weight: 1 }, { weight: 5 }, { weight: 9 }, { weight: 13 }, { weight: 17 }],
+                [{ weight: 2 }, { weight: 4 }, { weight: 6 }, { weight: 8 }, { weight: 10 }],
+                [{ weight: 3 }, { weight: 7 }, { weight: 11 }],
+                [],
+                [{ weight: 18 }, { weight: 19 }, { weight: 20 }]
+            ];
+
+            var result = primitives.common.mergeSort(arrays, function (item) { return item.weight; });
+
+            var expectedResult = [];
+            for (var index = 0; index < arrays.length; index += 1) {
+                var array1 = arrays[index];
+
+                expectedResult = expectedResult.concat(array1);
+            }
+            expectedResult.sort(function (a, b) {
+                return a.weight - b.weight;
+            });
+
+            assert.ok(jQuery.map(result, function (item) {return item.weight;}).join(',') == jQuery.map(expectedResult, function (item) {return item.weight;}).join(','), "Merged sort multiple arrays of objects!");
+        });
+
+        QUnit.test("primitives.common.highestContrast - test for highest contrast background color.", function (assert) {
+            assert.ok(primitives.common.highestContrast("black", "white", "yellow") == "white", "White on black has higher contrast than yellow on black. Passed!");
+        });
+
+        QUnit.test("primitives.common.stackSegments -  Sorts and stack segments on top of each other so they occupy minimum space.", function (assert) {
+            var items = [
+                new primitives.common.StackSegment(1, 70, 90),
+                new primitives.common.StackSegment(2, 70, 80),
+                new primitives.common.StackSegment(3, 10, 20),
+                new primitives.common.StackSegment(4, 30, 40),
+                new primitives.common.StackSegment(5, 36, 65),
+                new primitives.common.StackSegment(6, 50, 60),
+                new primitives.common.StackSegment(7, 10, 35)             
+            ];
+
+            var offset = primitives.common.stackSegments(items, function (item, offset) {
+                item.offset = offset;
+            });
+
+            assert.ok(offset = 2, "Items should stack on top of each other in 2 layes.");
+        });
+
+        QUnit.test("primitives.common.binarySearch -  Search sorted list of elements for nearest item.", function (assert) {
+            var items = [
+                new primitives.common.Point(10, 10),
+                new primitives.common.Point(15, 10),
+                new primitives.common.Point(16, 10),
+                new primitives.common.Point(20, 10),
+                new primitives.common.Point(50, 10),
+                new primitives.common.Point(100, 10),
+                new primitives.common.Point(140, 10)
+            ];
+
+            var item = primitives.common.binarySearch(items, function (item, offset) {
+                return item.x - 4;
+            });
+
+            assert.ok(item.x = 10, "Function should return leftmost item.");
+
+            item = primitives.common.binarySearch(items, function (item, offset) {
+                return item.x - 200;
+            });
+
+            assert.ok(item.x = 140, "Function should return rightmost  item.");
+
+            item = primitives.common.binarySearch(items, function (item, offset) {
+                return item.x - 60;
+            });
+
+            assert.ok(item.x = 50, "Function should return item having x equal 50.");
+
+            item = primitives.common.binarySearch(items, function (item, offset) {
+                return item.x - 90;
+            });
+
+            assert.ok(item.x = 100, "Function should return item having x equal 100.");
+        });
+
+        QUnit.test("primitives.common.perimeter.LinkedHashItems -  Add and iterate items in linked hash items collection.", function (assert) {
+            var items = [
+                { id: 1, name: 'A' },
+                { id: 2, name: 'B' },
+                { id: 3, name: 'C' },
+                { id: 4, name: 'D' },
+                { id: 5, name: 'E' },
+                { id: 6, name: 'F' }
+            ];
+
+            var linkedHashItems = new primitives.common.perimeter.LinkedHashItems();
+            for (var index = 0; index < items.length; index++) {
+                var item = items[index];
+                linkedHashItems.add(item.id, item);
+            };
+
+            var result = [];
+            linkedHashItems.iterate(function (item) {
+                result.push(item);
+            });
+            assert.ok(primitives.common.compareArrays(items, result, function (item) {
+                return item.id;
+            }), "Forward iteration returned correct items!");
+
+            var reversedResult = [],
+                reversedItems = items.slice(0);
+            reversedItems.reverse();
+
+            linkedHashItems.iterateBack(function (item) {
+                reversedResult.push(item);
+            });
+            assert.ok(primitives.common.compareArrays(reversedItems, reversedResult, function (item) {
+                return item.id;
+            }), "Back iteration returned correct items!");
+
+            linkedHashItems.remove(3);
+            items.splice(2, 1);
+            assert.ok(primitives.common.compareArrays(items, linkedHashItems.toArray(), function (item) {
+                return item.id;
+            }), "Removed item. Passed!");
+
+            linkedHashItems.remove(1);
+            items.splice(0, 1);
+            assert.ok(primitives.common.compareArrays(items, linkedHashItems.toArray(), function (item) {
+                return item.id;
+            }), "Remove first item. Passed!");
+
+            linkedHashItems.remove(6);
+            items.splice(3, 1);
+            assert.ok(primitives.common.compareArrays(items, linkedHashItems.toArray(), function (item) {
+                return item.id;
+            }), "Remove last item. Passed!");
+
+            linkedHashItems.empty();
+            assert.ok(primitives.common.compareArrays([], linkedHashItems.toArray(), function (item) {
+                return item.id;
+            }), "Remove all items. Passed!");
+        });
+
+        QUnit.test("primitives.common.perimeter.Manager -  Add perimeters and get merged results.", function (assert) {
+            var validate = function (segments) {
+                var result = null;
+                for (var key in segments.segmentsHash) {
+                    if (segments.segmentsHash.hasOwnProperty(key)) {
+                        if (!segments.nextKeys.hasOwnProperty(key) || !segments.prevKeys.hasOwnProperty(key)) {
+                            result = "Orphant key found!";
+                        }
+                    }
+                }
+                if (!segments.segmentsHash.hasOwnProperty(segments.startSegmentKey) || !segments.segmentsHash.hasOwnProperty(segments.endSegmentKey)) {
+                    result = "Start or end values are missing!";
+                }
+                for (var key in segments.nextKeys) {
+                    if (segments.nextKeys.hasOwnProperty(key)) {
+                        if (!segments.segmentsHash.hasOwnProperty(key) || !segments.prevKeys.hasOwnProperty(key)) {
+                            result = "Orphant key found!";
+                        }
+                        var nextKey = segments.nextKeys[key];
+                        if (nextKey && !segments.nextKeys.hasOwnProperty(nextKey)) {
+                            result = "Next key not found!";
+                        }
+                    }
+                }
+                for (var key in segments.prevKeys) {
+                    if (segments.prevKeys.hasOwnProperty(key)) {
+                        if (!segments.segmentsHash.hasOwnProperty(key) || !segments.nextKeys.hasOwnProperty(key)) {
+                            result = "Orphant key found!";
+                        }
+                        var prevKey = segments.prevKeys[key];
+                        if (prevKey && !segments.prevKeys.hasOwnProperty(prevKey)) {
+                            result = "Prev key not found!";
+                        }
+                    }
+                }
+                return result;
+            };
+
+            var points = [
+                new primitives.common.Point(0, 0),
+                new primitives.common.Point(10, 0),
+                new primitives.common.Point(20, 0),
+                new primitives.common.Point(0, 10),
+                new primitives.common.Point(10, 10),
+                new primitives.common.Point(20, 10),
+                new primitives.common.Point(0, 20),
+                new primitives.common.Point(10, 20),
+                new primitives.common.Point(20, 20)
+            ];
+            var perimeters = [
+                new primitives.common.perimeter.Item(1, [
+                    new primitives.common.perimeter.SegmentItem(points[0], points[3]),
+                    new primitives.common.perimeter.SegmentItem(points[3], points[4]),
+                    new primitives.common.perimeter.SegmentItem(points[4], points[1]),
+                    new primitives.common.perimeter.SegmentItem(points[1], points[0])
+                ]),
+                new primitives.common.perimeter.Item(2, [
+                    new primitives.common.perimeter.SegmentItem(points[1], points[4]),
+                    new primitives.common.perimeter.SegmentItem(points[4], points[5]),
+                    new primitives.common.perimeter.SegmentItem(points[5], points[2]),
+                    new primitives.common.perimeter.SegmentItem(points[2], points[1])
+                ]),
+                new primitives.common.perimeter.Item(3, [
+                    new primitives.common.perimeter.SegmentItem(points[4], points[3]),
+                    new primitives.common.perimeter.SegmentItem(points[3], points[6]),
+                    new primitives.common.perimeter.SegmentItem(points[6], points[7]),
+                    new primitives.common.perimeter.SegmentItem(points[7], points[4])
+                ]),
+                new primitives.common.perimeter.Item(4, [
+                    new primitives.common.perimeter.SegmentItem(points[8], points[5]),
+                    new primitives.common.perimeter.SegmentItem(points[5], points[4]),
+                    new primitives.common.perimeter.SegmentItem(points[4], points[7]),
+                    new primitives.common.perimeter.SegmentItem(points[7], points[8])
+                ])
+            ];
+
+            var expectedResult = new primitives.common.perimeter.Item(1, [
+                    new primitives.common.perimeter.SegmentItem(points[0], points[3]),
+                    new primitives.common.perimeter.SegmentItem(points[3], points[6]),
+                    new primitives.common.perimeter.SegmentItem(points[6], points[7]),
+                    new primitives.common.perimeter.SegmentItem(points[7], points[8]),
+                    new primitives.common.perimeter.SegmentItem(points[8], points[5]),
+                    new primitives.common.perimeter.SegmentItem(points[5], points[2]),
+                    new primitives.common.perimeter.SegmentItem(points[2], points[1]),
+                    new primitives.common.perimeter.SegmentItem(points[1], points[0])
+            ]);
+
+            var manager = new primitives.common.perimeter.Manager(perimeters);
+
+            var results = manager.getMergedPerimeters([1, 2, 3, 4]);
+
+            var validationResult = validate(results[0].segments);
+            assert.ok(validationResult == null, "Structure passed validation. " + (validationResult == null || validationResult));
+
+            assert.ok(results.length == 1 && primitives.common.compareArrays(expectedResult.segments.toArray(), results[0].segments.toArray(), function (item) {
+                return item.key;
+            }), "Manager merged 4 square perimeters into one as expected. Passed!");
+
+            var perimeters2 = [
+                new primitives.common.perimeter.Item(1, [
+                    new primitives.common.perimeter.SegmentItem(points[0], points[3]),
+                    new primitives.common.perimeter.SegmentItem(points[3], points[6]),
+                    new primitives.common.perimeter.SegmentItem(points[6], points[7]),
+                    new primitives.common.perimeter.SegmentItem(points[7], points[4]),
+                    new primitives.common.perimeter.SegmentItem(points[4], points[1]),
+                    new primitives.common.perimeter.SegmentItem(points[1], points[0])
+                ]),
+                new primitives.common.perimeter.Item(2, [
+                    new primitives.common.perimeter.SegmentItem(points[1], points[4]),
+                    new primitives.common.perimeter.SegmentItem(points[4], points[7]),
+                    new primitives.common.perimeter.SegmentItem(points[7], points[8]),
+                    new primitives.common.perimeter.SegmentItem(points[8], points[5]),
+                    new primitives.common.perimeter.SegmentItem(points[5], points[2]),
+                    new primitives.common.perimeter.SegmentItem(points[2], points[1])
+                ])
+            ];
+
+            var expectedResult2 = new primitives.common.perimeter.Item(1, [
+                    new primitives.common.perimeter.SegmentItem(points[0], points[3]),
+                    new primitives.common.perimeter.SegmentItem(points[3], points[6]),
+                    new primitives.common.perimeter.SegmentItem(points[6], points[7]),
+                    new primitives.common.perimeter.SegmentItem(points[7], points[8]),
+                    new primitives.common.perimeter.SegmentItem(points[8], points[5]),
+                    new primitives.common.perimeter.SegmentItem(points[5], points[2]),
+                    new primitives.common.perimeter.SegmentItem(points[2], points[1]),
+                    new primitives.common.perimeter.SegmentItem(points[1], points[0])
+            ]);
+
+            var manager2 = new primitives.common.perimeter.Manager(perimeters2);
+
+            var results2 = manager2.getMergedPerimeters([1, 2]);
+
+            var validationResult = validate(results2[0].segments);
+            assert.ok(validationResult == null, "Structure passed validation. " + (validationResult == null || validationResult));
+
+            assert.ok(results.length == 1 && primitives.common.compareArrays(expectedResult2.segments.toArray(), results2[0].segments.toArray(), function (item) {
+                return item.key;
+            }), "Manager merged rectangular perimeters into one as expected. Passed!");
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html> 
+<html xmlns="http://www.w3.org/1999/xhtml" style="margin: 0; padding: 0; height: 100%; overflow: hidden;">
+<head>
+    <title>Test Layout</title>
+    <link rel="stylesheet" href="demo/js/jquery/ui-lightness/jquery-ui-1.10.2.custom.css" />
+    <script type="text/javascript" src="demo/js/jquery/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="demo/js/jquery/jquery-ui-1.10.2.custom.js"></script>
+</head>
+<script>
+    jQuery(document).ready(function () {
+        jQuery("#combobox").change(function () {
+            jQuery("#content").attr('src', jQuery("#combobox").val());
+        });
+    });
+</script>
+
+<body style="margin: 0; padding: 0; height: 100%; overflow: hidden;">
+    <div style="position: absolute; left: 0; top: 0; right: 0; height: 30px;">
+        <div class="ui-widget">
+            <label>&nbsp;<a href="http://www.basicprimitives.com">BP</a>:</label>
+            <select id="combobox" style="margin-top:2px;">
+                <option value="DemoLargeHierarchy.html">Large Hierarchy (DemoLargeHierarchy.html)</option>
+                <option value="DemoDynamicLoading.html">Dynamic Data Loading Demo (DemoDynamicLoading.html)</option>
+                <option value="DemoEditor.html">Editor (DemoEditor.html)</option>
+                <option value="DemoVerticalLayout.html">Vertical Layout (DemoVerticalLayout.html)</option>
+                <option value="DemoCrossTeamGroup.html">Cross Team Working Group (DemoCrossTeamGroup.html)</option>
+                <option value="DemoDragNDrop.html">Drag & Drop (DemoDragNDrop.html)</option>
+                <option value="DemoPartners.html">Partners & Annotations (DemoPartners.html)</option>
+                <option value="DemoFamily.html">Family Chart with Annotations(DemoFamily.html)</option>
+                <option value="DemoFinancialOwnership.html">Financial Ownership Chart (DemoFinancialOwnership.html)</option>
+                <option value="DemoDependencies.html">Dependencies Chart (DemoDependencies.html)</option>
+
+                <option value="DemoInvisibleItems.html">Layout Items with Invisibles Items (DemoInvisibleItems.html)</option>
+                <option value="DemoOrientation.html">Selection checkbox inside item template (DemoOrientation.html)</option>
+                <option value="DemoBootstrap.html">Bootstrap (DemoBootstrap.html)</option>
+                <option value="DemoText.html">Rotated Text Helper Widget(DemoText.html)</option>
+                <option value="DemoCallout.html">Callout Helper Widget(DemoCallout.html)</option>
+                <option value="DemoShape.html">Shape Annotation Helper Widget(DemoShape.html)</option>
+                <option value="DemoConnector.html">Connector Annotation Helper Widget(DemoConnector.html)</option>
+
+                <option value="CaseFirstOrganizationalChart.html">First Organizational Chart (CaseFirstOrganizationalChart.html)</option>
+                <option value="CaseChildrenPlacementType.html">Children layouts (CaseChildrenPlacementType.html)</option>
+                <option value="CaseAddingNewItemsToChartAtRuntime.html">Adding new items to chart at runtime (CaseAddingNewItemsToChartAtRuntime.html)</option>
+                <option value="CaseAdviserAndAssistantItemTypes.html">Adviser and Assistant item types (CaseAdviserAndAssistantItemTypes.html)</option>
+                <option value="CaseSubAdviserAndSubAssistantItemTypes.html">SubAdviser and SubAssistant item types (CaseSubAdviserAndSubAssistantItemTypes.html)</option>
+                <option value="CaseGeneralPartnerItemType.html">General Partner item type (CaseGeneralPartnerItemType.html)</option>
+                <option value="CaseLimitedPartnerItemType.html">Limited Partner item type (CaseLimitedPartnerItemType.html)</option>
+                <option value="CaseAdviserPartnerItemType.html">Adviser Partner item type (CaseAdviserPartnerItemType.html)</option>
+                <option value="CasePlacementAndAutosizing.html">Placement and autosizing (CasePlacementAndAutosizing.html)</option>
+                <option value="CasePrintPreview.html">Print Preview (CasePrintPreview.html)</option>
+                <option value="CaseOrganizationalChartInsidejQueryUIDialog.html">Organizational Chart inside jQuery UI Dialog (CaseOrganizationalChartInsidejQueryUIDialog.html)</option>
+                <option value="CaseSelectingCursorItem.html">Selecting cursor item (CaseSelectingCursorItem.html)</option>
+                <option value="CaseSelectingHighlightItem.html">Selecting highlight item (CaseSelectingHighlightItem.html)</option>
+                <option value="CaseSelectedItems.html">Selected items (CaseSelectedItems.html)</option>
+                <option value="CaseSelectionPathMode.html">Selection path mode (CaseSelectionPathMode.html)</option>
+                <option value="CaseButtonsPanel.html">Buttons panel (CaseButtonsPanel.html)</option>
+                <option value="CaseButtonsInCursorTemplate.html">Cursor Template with item specific context buttons (CaseButtonsInCursorTemplate.html)</option>
+                <option value="CaseItemAndGroupTitleColors.html">Item and group title colors (CaseItemAndGroupTitleColors.html)</option>
+                <option value="CaseItemTemplate.html">Item template (CaseItemTemplate.html)</option>
+                <option value="CaseZoomWithItemTemplate.html">Zoom using item template (CaseZoomWithItemTemplate.html)</option>
+                <option value="CaseItemTemplateLabel.html">Labels (CaseItemTemplateLabel.html)</option>
+                <option value="CaseCustomControlTemplate.html">Item template having Custom Control (CaseCustomControlTemplate.html)</option>
+                <option value="CaseAddingLinkToItemTemplate.html">Adding Link To Item Template (CaseAddingLinkToItemTemplate.html)</option>
+                <option value="CaseCursorTemplateAndTwitterBootstrap.html">Cursor template and Twitter Bootstrap (CaseCursorTemplateAndTwitterBootstrap.html)</option>
+                <option value="CaseCursorAnimation.html">Cursor animation (CaseCursorAnimation.html)</option>
+                <option value="CaseHighlightTemplate.html">Highlight template (CaseHighlightTemplate.html)</option>
+                <option value="CaseMultipleRootItemsInChart.html">Multiple root items in chart (CaseMultipleRootItemsInChart.html)</option>
+                <option value="CaseMatrixLayoutOfMultipleRootItemsInChart.html">Matrix layout of multiple root items in chart (CaseMatrixLayoutOfMultipleRootItemsInChart.html)</option>
+                <option value="CaseCustomLayoutWithInvisibleItems.html">Custom layout with invisible items (CaseCustomLayoutWithInvisibleItems.html)</option>
+                <option value="CaseSkippedLevels.html">Skipped levels using invisible items (CaseSkippedLevels.html)</option>
+                <option value="CaseInactiveItems.html">Inactive Items in layout (CaseInactiveItems.html)</option>
+                <option value="CaseShapeAnnotation.html">Shape Annotation (CaseShapeAnnotation.html)</option>
+                <option value="CaseConnectorAnnotation.html">Connector Annotation (CaseConnectorAnnotation.html)</option>
+                <option value="CaseHighlightPathAnnotation.html">Highlight Path Annotation (CaseHighlightPathAnnotation.html)</option>
+				<option value="CaseAngularJSOrganizationalChartDirective.html">AngularJS Directive Example (CaseAngularJSOrganizationalChartDirective.html)</option>
+                <option value="CaseFirstFamilyChart.html">First Family Chart (CaseFirstFamilyChart.html)</option>
+                <option value="CaseSkippedParentInFamilyChartChart.html">Skipped Parent In Family Chart (CaseSkippedParentInFamilyChartChart.html)</option>
+                <option value="CasePERTChart.html">PERT chart item template (CasePERTChart.html)</option>
+            </select>
+        </div>
+    </div>
+    <div style="position: absolute; left: 0; right: 0; bottom: 0; top: 30px; height: expression(document.body.clientHeight-30);">
+        <iframe id="content" width="100%" height="100%" src="DemoLargeHierarchy.html" />
+    </div>
+</body>
+</html>

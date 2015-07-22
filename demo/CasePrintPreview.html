@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html> 
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Resize Example</title>
+    <link rel="stylesheet" href="demo/js/jquery/ui-lightness/jquery-ui-1.10.2.custom.css" />
+    <script type="text/javascript" src="demo/js/jquery/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="demo/js/jquery/jquery-ui-1.10.2.custom.min.js"></script>
+
+    <script  type="text/javascript" src="demo/js/primitives.min.js?2023"></script>
+    <link href="demo/css/primitives.latest.css?2023" media="screen" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="demo/js/famdata.js?a=1"></script>
+
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            var options = new primitives.orgdiagram.Config();
+
+            options.items = famdata;
+            options.cursorItem = null;
+            options.hasSelectorCheckbox = primitives.common.Enabled.False;
+            options.hasButtons = primitives.common.Enabled.False;
+            options.pageFitMode = primitives.common.PageFitMode.PrintPreview;
+            options.elbowType = primitives.common.ElbowType.Round;
+            options.normalLevelShift = 30;
+            options.dotLevelShift = 30;
+            options.lineLevelShift = 24;
+            options.normalItemsInterval = 20;
+            options.dotItemsInterval = 10;
+            options.lineItemsInterval = 4;
+            options.linesWidth = 1;
+            options.linesColor = "black";
+            options.cousinsIntervalMultiplier = 1;
+
+            options.arrowsDirection = primitives.common.GroupByType.Parents;
+
+            jQuery("#diagram").famDiagram(options);
+
+            var placeholder = jQuery(".placeholder");
+            jQuery("#diagram").css({
+                width: placeholder.width() + 10,
+                height: placeholder.height() + 10,
+            })
+            jQuery("#diagram").famDiagram("update");
+        });
+    </script>
+</head>
+<body>
+    <div id="diagram" style="position: absolute; overflow: visible; width: 2000px; height: 1000px; border-style: dotted; border-width: 1px;"></div>
+</body>
+</html>
